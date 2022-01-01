@@ -1,4 +1,7 @@
-use sdl2::{gfx::primitives::DrawRenderer, pixels::Color, render::Canvas, video::Window};
+use cgmath::Point2;
+use sdl2::{
+    gfx::primitives::DrawRenderer, pixels::Color, rect::Rect, render::Canvas, video::Window,
+};
 use space::{galaxy::Galaxy, star::Star, SpaceObject};
 
 mod space;
@@ -7,18 +10,6 @@ pub const WIDTH: u32 = 800;
 pub const HEIGHT: u32 = 600;
 pub const X_SECTORS: u32 = WIDTH / 16;
 pub const Y_SECTORS: u32 = HEIGHT / 16;
-
-#[derive(Debug, Clone)]
-pub struct Vec2<T> {
-    pub x: T,
-    pub y: T,
-}
-
-impl<T> Vec2<T> {
-    pub fn new(x: T, y: T) -> Self {
-        Self { x, y }
-    }
-}
 
 #[derive(Debug, Default)]
 pub struct LehmerRnd {
@@ -46,9 +37,9 @@ impl LehmerRnd {
 }
 
 pub struct State {
-    pub pos: Vec2<f32>,
+    pub pos: Point2<f32>,
     pub directions: [bool; 4],
-    pub mouse_xy: Vec2<f32>,
+    pub mouse_xy: Point2<f32>,
     pub lmb_clicked: bool,
     pub galaxy: Galaxy,
     pub lehmer: LehmerRnd,
@@ -58,9 +49,9 @@ pub struct State {
 impl State {
     pub fn new() -> Self {
         Self {
-            pos: Vec2::new(0., 0.),
+            pos: Point2::new(0., 0.),
             directions: [false, false, false, false],
-            mouse_xy: Vec2::new(0., 0.),
+            mouse_xy: Point2::new(0., 0.),
             lmb_clicked: false,
             galaxy: Galaxy::new(),
             lehmer: LehmerRnd { counter: 0 },
@@ -85,13 +76,13 @@ impl State {
         self.galaxy.update(self.pos.clone(), &mut self.lehmer);
 
         if self.lmb_clicked {
-            let sx = (self.mouse_xy.x as f32 + self.pos.x) as i64;
-            let sy = (self.mouse_xy.y as f32 + self.pos.y) as i64;
+            let sx = (self.mouse_xy.x.floor() as f32 + self.pos.x) as i64;
+            let sy = (self.mouse_xy.y.floor() as f32 + self.pos.y) as i64;
 
             let star_system = SpaceObject::gen_star(
                 sx,
                 sy,
-                Vec2::new(self.mouse_xy.x as f32, self.mouse_xy.y as f32),
+                Point2::new(self.pos.x.floor() as f32, self.pos.y.floor() as f32),
                 &mut self.lehmer,
                 true,
             );
@@ -129,7 +120,53 @@ impl State {
         });
 
         if let Some(system) = &self.selected_system {
-            println!("{:?}", system);
+            // Container
+            canvas.set_draw_color(Color::BLUE);
+            let _ = canvas.fill_rect(Rect::new(
+                10,
+                (HEIGHT / 2u32) as i32,
+                WIDTH - 20,
+                (HEIGHT / 2) - 10,
+            ));
+            canvas.set_draw_color(Color::WHITE);
+            let _ = canvas.draw_rect(Rect::new(
+                10,
+                (HEIGHT / 2u32) as i32,
+                WIDTH - 20,
+                (HEIGHT / 2) - 10,
+            ));
+
+            // Star
+
+            let x = (WIDTH / 16u32) as i16;
+            let y = ((HEIGHT / 2u32) as f32) as i16 + (HEIGHT / 4u32) as i16;
+
+            let _ = canvas.filled_circle(x, y, (system.diameter / 2.) as i16, system.colour);
+
+            // Planets
+            if let Some(star) = &system.child {
+                star.planets.iter().for_each(|planet| {
+                    let planet_x = x + (planet.child.as_ref().unwrap().orbit_distance * 0.8) as i16;
+                    let _ = canvas.filled_circle(
+                        planet_x,
+                        y,
+                        (planet.diameter / 2.) as i16,
+                        planet.colour,
+                    );
+
+                    // Moons
+                    if let Some(planet) = &planet.child {
+                        planet.moons.iter().for_each(|moon| {
+                            let _ = canvas.filled_circle(
+                                planet_x,
+                                y + (moon.child.as_ref().unwrap().orbit_distance * 0.8) as i16,
+                                (moon.diameter / 2.0) as i16,
+                                moon.colour,
+                            );
+                        });
+                    }
+                });
+            }
         }
 
         canvas.present();

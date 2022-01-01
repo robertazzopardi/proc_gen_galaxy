@@ -1,3 +1,5 @@
+extern crate cgmath;
+extern crate procedural_gen;
 extern crate sdl2;
 
 mod time;
@@ -25,7 +27,13 @@ pub fn main() -> Result<(), String> {
 
         canvas
             .window_mut()
-            .set_title(format!("x: {} y: {}", state.pos.x, state.pos.y).as_str())
+            .set_title(
+                format!(
+                    "x: {} y: {} mx: {} my: {}",
+                    state.pos.x, state.pos.y, state.mouse_xy.x, state.mouse_xy.y
+                )
+                .as_str(),
+            )
             .unwrap();
 
         state.render(&mut canvas);

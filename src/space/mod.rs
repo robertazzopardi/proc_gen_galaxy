@@ -3,9 +3,8 @@ pub mod moon;
 pub mod planet;
 pub mod star;
 
+use cgmath::Point2;
 use sdl2::pixels::Color;
-
-use crate::Vec2;
 
 const STAR_COLOURS: [Color; 7] = [
     Color::RGB(175, 201, 255),
@@ -22,7 +21,7 @@ pub trait SpaceObjectTrait {}
 #[derive(Debug, Clone)]
 pub struct SpaceObject<T: SpaceObjectTrait> {
     pub diameter: f32,
-    pub pos: Vec2<f32>,
+    pub pos: Point2<f32>,
     pub colour: Color,
-    child: Option<T>,
+    pub child: Option<T>,
 }
