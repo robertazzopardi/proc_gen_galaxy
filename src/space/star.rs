@@ -32,7 +32,7 @@ impl SpaceObject<Star> {
 
         Some(SpaceObject {
             diameter,
-            pos: pos.clone(),
+            pos,
             colour,
             child: if gen_full_system {
                 Some(Star {

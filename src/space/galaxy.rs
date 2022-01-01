@@ -4,15 +4,12 @@ use crate::{LehmerRnd, X_SECTORS, Y_SECTORS};
 
 use super::{star::Star, SpaceObject};
 
+#[derive(Default)]
 pub struct Galaxy {
     pub stars: Vec<SpaceObject<Star>>,
 }
 
 impl Galaxy {
-    pub fn new() -> Self {
-        Self { stars: Vec::new() }
-    }
-
     pub fn update(&mut self, state_pos: Point2<f32>, lehmer: &mut LehmerRnd) {
         self.stars.clear();
 

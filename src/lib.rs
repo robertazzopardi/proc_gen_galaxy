@@ -46,19 +46,21 @@ pub struct State {
     pub selected_system: Option<SpaceObject<Star>>,
 }
 
-impl State {
-    pub fn new() -> Self {
+impl Default for State {
+    fn default() -> Self {
         Self {
             pos: Point2::new(0., 0.),
             directions: [false, false, false, false],
             mouse_xy: Point2::new(0., 0.),
             lmb_clicked: false,
-            galaxy: Galaxy::new(),
+            galaxy: Galaxy::default(),
             lehmer: LehmerRnd { counter: 0 },
             selected_system: None,
         }
     }
+}
 
+impl State {
     pub fn update(&mut self, dt: f32) {
         if self.directions[0] {
             self.pos.y -= 50. * dt;
@@ -73,7 +75,7 @@ impl State {
             self.pos.x += 50. * dt;
         }
 
-        self.galaxy.update(self.pos.clone(), &mut self.lehmer);
+        self.galaxy.update(self.pos, &mut self.lehmer);
 
         if self.lmb_clicked {
             let sx = (self.mouse_xy.x.floor() as f32 + self.pos.x) as i64;

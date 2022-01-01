@@ -16,7 +16,7 @@ pub fn main() -> Result<(), String> {
 
     let mut time = Time::new();
 
-    let mut state = State::new();
+    let mut state = State::default();
 
     while running {
         time.diff();
