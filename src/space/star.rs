@@ -13,13 +13,12 @@ pub struct Star {
 
 impl SpaceObject<Star> {
     pub fn gen_star(
-        sx: i64,
-        sy: i64,
+        s_xy: Point2<i64>,
         pos: Point2<f32>,
         lehmer: &mut LehmerRnd,
         gen_full_system: bool,
     ) -> Option<Self> {
-        lehmer.counter = (sx & 0xFFFF).wrapping_shl(16) | (sy & 0xFFFF);
+        lehmer.counter = (s_xy.x & 0xFFFF).wrapping_shl(16) | (s_xy.y & 0xFFFF);
 
         let exists = lehmer.rnd_int(0, 20) == 1;
         if !exists {
@@ -51,9 +50,9 @@ impl SpaceObject<Star> {
             return Vec::new();
         }
 
-        let distance_from_star = lehmer.rnd_double(60., 200.);
+        let mut distance_from_star = lehmer.rnd_double(60., 200.);
 
-        iter::repeat_with(|| SpaceObject::gen_planet(lehmer, x, y, distance_from_star))
+        iter::repeat_with(|| SpaceObject::gen_planet(lehmer, x, y, &mut distance_from_star))
             .take(n_planets as usize)
             .collect()
     }

@@ -2,6 +2,8 @@ use std::time::{Duration, Instant};
 
 use procedural_gen::State;
 
+const FRAME_TIME: f32 = 0.01666;
+
 pub(crate) struct Time {
     dt: Duration,
     t: Duration,
@@ -12,7 +14,7 @@ pub(crate) struct Time {
 impl Time {
     pub fn new() -> Self {
         Self {
-            dt: Duration::from_secs_f32(0.01666),
+            dt: Duration::from_secs_f32(FRAME_TIME),
             t: Duration::ZERO,
             now: std::time::Instant::now(),
             acc: Duration::ZERO,

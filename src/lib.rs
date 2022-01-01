@@ -1,3 +1,5 @@
+use std::ops::{Deref, DerefMut};
+
 use cgmath::Point2;
 use sdl2::{
     gfx::primitives::DrawRenderer, pixels::Color, rect::Rect, render::Canvas, video::Window,
@@ -82,18 +84,13 @@ impl State {
             let sy = (self.mouse_xy.y.floor() as f32 + self.pos.y) as i64;
 
             let star_system = SpaceObject::gen_star(
-                sx,
-                sy,
+                Point2::new(sx, sy),
                 Point2::new(self.pos.x.floor() as f32, self.pos.y.floor() as f32),
                 &mut self.lehmer,
                 true,
             );
 
-            if star_system.is_some() {
-                self.selected_system = star_system
-            } else {
-                self.selected_system = None
-            }
+            self.selected_system = star_system.or(None);
         }
     }
 
@@ -139,7 +136,6 @@ impl State {
             ));
 
             // Star
-
             let x = (WIDTH / 16u32) as i16;
             let y = ((HEIGHT / 2u32) as f32) as i16 + (HEIGHT / 4u32) as i16;
 
@@ -148,7 +144,7 @@ impl State {
             // Planets
             if let Some(star) = &system.child {
                 star.planets.iter().for_each(|planet| {
-                    let planet_x = x + (planet.child.as_ref().unwrap().orbit_distance * 0.8) as i16;
+                    let planet_x = x + (planet.child.as_ref().unwrap().orbit_distance * 0.5) as i16;
                     let _ = canvas.filled_circle(
                         planet_x,
                         y,

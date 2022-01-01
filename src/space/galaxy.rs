@@ -18,8 +18,12 @@ impl Galaxy {
                 let sx = (x as f32 + state_pos.x) as i64;
                 let sy = (y as f32 + state_pos.y) as i64;
 
-                let star_system =
-                    SpaceObject::gen_star(sx, sy, Point2::new(x as f32, y as f32), lehmer, false);
+                let star_system = SpaceObject::gen_star(
+                    Point2::new(sx, sy),
+                    Point2::new(x as f32, y as f32),
+                    lehmer,
+                    false,
+                );
 
                 if let Some(system) = star_system {
                     self.stars.push(system);

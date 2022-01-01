@@ -13,9 +13,16 @@ pub struct Planet {
 }
 
 impl SpaceObject<Planet> {
-    pub fn gen_planet(lehmer: &mut LehmerRnd, x: f32, y: f32, distance_from_star: f32) -> Self {
-        let orbit_distance = distance_from_star + lehmer.rnd_double(20., 200.);
-        let diameter = lehmer.rnd_double(4., 20.);
+    pub fn gen_planet(
+        lehmer: &mut LehmerRnd,
+        x: f32,
+        y: f32,
+        distance_from_star: &mut f32,
+    ) -> Self {
+        let orbit_distance = *distance_from_star;
+        *distance_from_star += lehmer.rnd_double(20., 200.);
+
+        let diameter = lehmer.rnd_double(5., 30.);
 
         Self {
             diameter,
