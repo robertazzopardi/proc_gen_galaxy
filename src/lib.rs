@@ -1,5 +1,3 @@
-use std::ops::{Deref, DerefMut};
-
 use cgmath::Point2;
 use sdl2::{
     gfx::primitives::DrawRenderer, pixels::Color, rect::Rect, render::Canvas, video::Window,

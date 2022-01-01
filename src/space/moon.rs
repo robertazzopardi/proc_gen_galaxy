@@ -11,7 +11,7 @@ pub struct Moon {
 
 impl SpaceObject<Moon> {
     pub fn gen_moon(lehmer: &mut LehmerRnd, x: f32, y: f32, distance_from_planet: f32) -> Self {
-        let orbit_distance = distance_from_planet + lehmer.rnd_double(20., 200.);
+        let orbit_distance = distance_from_planet + lehmer.rnd_double(10., 100.);
         let diameter = lehmer.rnd_double(1., 5.);
 
         Self {
