@@ -1,3 +1,4 @@
+use crate::time::Time;
 use procedural_gen::{State, HEIGHT, WIDTH};
 use sdl2::{
     event::Event, keyboard::Keycode, mouse::MouseButton, render::Canvas, video::Window, EventPump,
@@ -14,6 +15,35 @@ pub fn init_sdl() -> Result<(Canvas<Window>, EventPump), String> {
     let canvas = window.into_canvas().build().map_err(|e| e.to_string())?;
     let event_pump = sdl_context.event_pump()?;
     Ok((canvas, event_pump))
+}
+
+pub fn main_loop(
+    mut running: bool,
+    mut time: Time,
+    mut event_pump: sdl2::EventPump,
+    mut state: State,
+    mut canvas: sdl2::render::Canvas<sdl2::video::Window>,
+) {
+    while running {
+        time.diff();
+
+        handle_events(&mut event_pump, &mut running, &mut state);
+
+        time.update(&mut state);
+
+        canvas
+            .window_mut()
+            .set_title(
+                format!(
+                    "x: {} y: {} mx: {} my: {}",
+                    state.pos.x, state.pos.y, state.mouse_xy.x, state.mouse_xy.y
+                )
+                .as_str(),
+            )
+            .unwrap();
+
+        state.render(&mut canvas);
+    }
 }
 
 pub fn handle_events(event_pump: &mut EventPump, running: &mut bool, state: &mut State) {

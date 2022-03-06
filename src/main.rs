@@ -7,37 +7,18 @@ mod window;
 
 use crate::time::Time;
 use procedural_gen::State;
-use window::{handle_events, init_sdl};
+use window::{init_sdl, main_loop};
 
 pub fn main() -> Result<(), String> {
-    let (mut canvas, mut event_pump) = init_sdl()?;
+    let (canvas, event_pump) = init_sdl()?;
 
-    let mut running = true;
+    let running = true;
 
-    let mut time = Time::new();
+    let time = Time::new();
 
-    let mut state = State::default();
+    let state = State::default();
 
-    while running {
-        time.diff();
-
-        handle_events(&mut event_pump, &mut running, &mut state);
-
-        time.update(&mut state);
-
-        canvas
-            .window_mut()
-            .set_title(
-                format!(
-                    "x: {} y: {} mx: {} my: {}",
-                    state.pos.x, state.pos.y, state.mouse_xy.x, state.mouse_xy.y
-                )
-                .as_str(),
-            )
-            .unwrap();
-
-        state.render(&mut canvas);
-    }
+    main_loop(running, time, event_pump, state, canvas);
 
     Ok(())
 }

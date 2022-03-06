@@ -1,18 +1,17 @@
+use super::{planet::Planet, SpaceObject, SpaceObjectTrait, STAR_COLOURS};
+use crate::LehmerRnd;
+use cgmath::Point2;
 use std::iter;
 
-use cgmath::Point2;
-
-use crate::LehmerRnd;
-
-use super::{planet::Planet, SpaceObject, SpaceObjectTrait, STAR_COLOURS};
+pub type Star = SpaceObject<_Star>;
 
 #[derive(Debug, Clone)]
-pub struct Star {
-    pub planets: Vec<SpaceObject<Planet>>,
+pub struct _Star {
+    pub planets: Vec<Planet>,
 }
 
-impl SpaceObject<Star> {
-    pub fn gen_star(
+impl Star {
+    pub fn new(
         s_xy: Point2<i64>,
         pos: Point2<f32>,
         lehmer: &mut LehmerRnd,
@@ -34,8 +33,8 @@ impl SpaceObject<Star> {
             pos,
             colour,
             child: if gen_full_system {
-                Some(Star {
-                    planets: Self::gen_planets(lehmer, pos.x, pos.y),
+                Some(_Star {
+                    planets: Self::gen_planets(lehmer, pos),
                 })
             } else {
                 None
@@ -43,19 +42,19 @@ impl SpaceObject<Star> {
         })
     }
 
-    fn gen_planets(lehmer: &mut LehmerRnd, x: f32, y: f32) -> Vec<SpaceObject<Planet>> {
+    fn gen_planets(lehmer: &mut LehmerRnd, pos: Point2<f32>) -> Vec<Planet> {
         let n_planets = lehmer.rnd_int(0, 10);
 
         if n_planets == 0 {
             return Vec::new();
         }
 
-        let mut distance_from_star = lehmer.rnd_double(60., 200.);
+        let mut orbit = lehmer.rnd_double(60., 200.);
 
-        iter::repeat_with(|| SpaceObject::gen_planet(lehmer, x, y, &mut distance_from_star))
+        iter::repeat_with(|| Planet::new(lehmer, pos, &mut orbit))
             .take(n_planets as usize)
             .collect()
     }
 }
 
-impl SpaceObjectTrait for Star {}
+impl SpaceObjectTrait for _Star {}

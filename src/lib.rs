@@ -2,7 +2,7 @@ use cgmath::Point2;
 use sdl2::{
     gfx::primitives::DrawRenderer, pixels::Color, rect::Rect, render::Canvas, video::Window,
 };
-use space::{galaxy::Galaxy, star::Star, SpaceObject};
+use space::{galaxy::Galaxy, star::Star};
 
 mod space;
 
@@ -19,8 +19,7 @@ pub struct LehmerRnd {
 impl LehmerRnd {
     fn next(&mut self) -> u32 {
         self.counter += 0xe120fc15;
-        let mut tmp: i64;
-        tmp = self.counter.wrapping_mul(0x4a39b70d);
+        let mut tmp = self.counter.wrapping_mul(0x4a39b70d);
         let m1 = (tmp >> 32) ^ tmp;
         tmp = m1.wrapping_mul(0x12fad5c9);
         let m2 = (tmp >> 32) ^ tmp;
@@ -43,7 +42,7 @@ pub struct State {
     pub lmb_clicked: bool,
     pub galaxy: Galaxy,
     pub lehmer: LehmerRnd,
-    pub selected_system: Option<SpaceObject<Star>>,
+    pub selected_system: Option<Star>,
 }
 
 impl Default for State {
@@ -81,7 +80,7 @@ impl State {
             let sx = (self.mouse_xy.x.floor() as f32 + self.pos.x) as i64;
             let sy = (self.mouse_xy.y.floor() as f32 + self.pos.y) as i64;
 
-            let star_system = SpaceObject::gen_star(
+            let star_system = Star::new(
                 Point2::new(sx, sy),
                 Point2::new(self.pos.x.floor() as f32, self.pos.y.floor() as f32),
                 &mut self.lehmer,
@@ -92,10 +91,7 @@ impl State {
         }
     }
 
-    pub fn render(&mut self, canvas: &mut Canvas<Window>) {
-        canvas.set_draw_color(Color::BLACK);
-        canvas.clear();
-
+    fn render_stars(&mut self, canvas: &mut Canvas<Window>) {
         self.galaxy.stars.iter().for_each(|system| {
             let _ = canvas.filled_circle(
                 system.pos.x as i16 * 16 + 8,
@@ -115,7 +111,20 @@ impl State {
                 );
             }
         });
+    }
 
+    pub fn render(&mut self, canvas: &mut Canvas<Window>) {
+        canvas.set_draw_color(Color::BLACK);
+        canvas.clear();
+
+        self.render_stars(canvas);
+
+        self.render_selected_system(canvas);
+
+        canvas.present();
+    }
+
+    fn render_selected_system(&mut self, canvas: &mut Canvas<Window>) {
         if let Some(system) = &self.selected_system {
             // Container
             canvas.set_draw_color(Color::BLUE);
@@ -164,7 +173,5 @@ impl State {
                 });
             }
         }
-
-        canvas.present();
     }
 }

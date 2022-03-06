@@ -1,17 +1,17 @@
+use super::{SpaceObject, SpaceObjectTrait, STAR_COLOURS};
+use crate::LehmerRnd;
 use cgmath::Point2;
 
-use crate::LehmerRnd;
-
-use super::{SpaceObject, SpaceObjectTrait, STAR_COLOURS};
+pub type Moon = SpaceObject<_Moon>;
 
 #[derive(Debug, Clone)]
-pub struct Moon {
+pub struct _Moon {
     pub orbit_distance: f32,
 }
 
-impl SpaceObject<Moon> {
-    pub fn gen_moon(lehmer: &mut LehmerRnd, x: f32, y: f32, distance_from_planet: f32) -> Self {
-        let orbit_distance = distance_from_planet + lehmer.rnd_double(10., 100.);
+impl Moon {
+    pub fn new(lehmer: &mut LehmerRnd, Point2 { x, y }: Point2<f32>, orbit: f32) -> Self {
+        let orbit_distance = orbit + lehmer.rnd_double(10., 100.);
         let diameter = lehmer.rnd_double(1., 5.);
 
         Self {
@@ -21,9 +21,9 @@ impl SpaceObject<Moon> {
                 y + orbit_distance * 90.0f32.sin(),
             ),
             colour: STAR_COLOURS[lehmer.rnd_int(0, STAR_COLOURS.len() as u32) as usize],
-            child: Some(Moon { orbit_distance }),
+            child: Some(_Moon { orbit_distance }),
         }
     }
 }
 
-impl SpaceObjectTrait for Moon {}
+impl SpaceObjectTrait for _Moon {}

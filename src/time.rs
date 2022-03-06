@@ -4,7 +4,7 @@ use procedural_gen::State;
 
 const FRAME_TIME: f32 = 0.01666;
 
-pub(crate) struct Time {
+pub struct Time {
     dt: Duration,
     t: Duration,
     now: Instant,
