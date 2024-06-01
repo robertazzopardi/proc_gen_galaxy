@@ -3,8 +3,7 @@ pub mod moon;
 pub mod planet;
 pub mod star;
 
-use crate::LehmerRnd;
-use cgmath::Point2;
+use crate::{LehmerRnd, Point2};
 use sdl2::pixels::Color;
 
 const STAR_COLOURS: [Color; 7] = [
@@ -20,12 +19,12 @@ const STAR_COLOURS: [Color; 7] = [
 #[derive(Debug, Clone)]
 pub struct SpaceObject {
     pub diameter: f32,
-    pub pos: Point2<f32>,
+    pub pos: Point2,
     pub colour: Color,
     pub orbit_radius: f32,
     pub satellites: Vec<SpaceObject>,
 }
 
 pub trait SpaceObjectTrait {
-    fn create(lehmer: &mut LehmerRnd, point: Point2<f32>, orbit_radius: f32) -> SpaceObject;
+    fn create(lehmer: &mut LehmerRnd, point: Point2, orbit_radius: f32) -> SpaceObject;
 }

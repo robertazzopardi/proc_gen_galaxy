@@ -1,12 +1,11 @@
 use super::{SpaceObject, SpaceObjectTrait, STAR_COLOURS};
-use crate::LehmerRnd;
-use cgmath::Point2;
+use crate::{LehmerRnd, Point2};
 
 #[derive(Debug, Clone)]
 pub struct Moon;
 
 impl SpaceObjectTrait for Moon {
-    fn create(lehmer: &mut LehmerRnd, point: Point2<f32>, orbit: f32) -> SpaceObject {
+    fn create(lehmer: &mut LehmerRnd, point: Point2, orbit: f32) -> SpaceObject {
         let orbit_radius = orbit + lehmer.rnd_double(10., 100.);
         let diameter = lehmer.rnd_double(1., 5.);
 

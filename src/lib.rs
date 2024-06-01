@@ -1,4 +1,3 @@
-use cgmath::Point2;
 use sdl2::{
     gfx::primitives::DrawRenderer, pixels::Color, rect::Rect, render::Canvas, video::Window,
 };
@@ -10,6 +9,18 @@ pub const WIDTH: u32 = 800;
 pub const HEIGHT: u32 = 600;
 pub const X_SECTORS: u32 = WIDTH / 16;
 pub const Y_SECTORS: u32 = HEIGHT / 16;
+
+#[derive(Debug, Clone, Copy)]
+pub struct Point2 {
+    pub x: f32,
+    pub y: f32,
+}
+
+impl Point2 {
+    pub fn new(x: f32, y: f32) -> Self {
+        Self { x, y }
+    }
+}
 
 #[derive(Debug, Default)]
 pub struct LehmerRnd {
@@ -36,9 +47,9 @@ impl LehmerRnd {
 }
 
 pub struct State {
-    pub pos: Point2<f32>,
+    pub pos: Point2,
     pub directions: [bool; 4],
-    pub mouse_xy: Point2<f32>,
+    pub mouse_xy: Point2,
     pub lmb_clicked: bool,
     pub galaxy: Galaxy,
     pub lehmer: LehmerRnd,

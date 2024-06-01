@@ -1,6 +1,5 @@
 use super::{planet::Planet, SpaceObject, SpaceObjectTrait, STAR_COLOURS};
-use crate::LehmerRnd;
-use cgmath::Point2;
+use crate::{LehmerRnd, Point2};
 use std::iter;
 
 #[derive(Debug, Clone)]
@@ -9,7 +8,7 @@ pub struct Star {
 }
 
 impl Star {
-    fn gen_planets(lehmer: &mut LehmerRnd, pos: Point2<f32>) -> Vec<SpaceObject> {
+    fn gen_planets(lehmer: &mut LehmerRnd, pos: Point2) -> Vec<SpaceObject> {
         let n_planets = lehmer.rnd_int(0, 10);
 
         if n_planets == 0 {
@@ -28,7 +27,7 @@ impl Star {
 }
 
 impl SpaceObjectTrait for Star {
-    fn create(lehmer: &mut LehmerRnd, pos: Point2<f32>, orbit_radius: f32) -> SpaceObject {
+    fn create(lehmer: &mut LehmerRnd, pos: Point2, orbit_radius: f32) -> SpaceObject {
         let diameter = lehmer.rnd_double(10., 40.);
 
         let colour = STAR_COLOURS[lehmer.rnd_int(0, STAR_COLOURS.len() as u32) as usize];

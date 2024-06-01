@@ -1,6 +1,5 @@
 use super::{moon::Moon, SpaceObject, SpaceObjectTrait, STAR_COLOURS};
-use crate::LehmerRnd;
-use cgmath::Point2;
+use crate::{LehmerRnd, Point2};
 use std::iter;
 
 #[derive(Debug, Clone)]
@@ -9,7 +8,7 @@ pub struct Planet {
 }
 
 impl Planet {
-    fn gen_moons(lehmer: &mut LehmerRnd, pos: Point2<f32>) -> Vec<SpaceObject> {
+    fn gen_moons(lehmer: &mut LehmerRnd, pos: Point2) -> Vec<SpaceObject> {
         let n_moons = lehmer.rnd_int(0, 5);
 
         if n_moons == 0 {
@@ -25,7 +24,7 @@ impl Planet {
 }
 
 impl SpaceObjectTrait for Planet {
-    fn create(lehmer: &mut LehmerRnd, pos: Point2<f32>, orbit_radius: f32) -> SpaceObject {
+    fn create(lehmer: &mut LehmerRnd, pos: Point2, orbit_radius: f32) -> SpaceObject {
         let diameter = lehmer.rnd_double(5., 30.);
 
         SpaceObject {

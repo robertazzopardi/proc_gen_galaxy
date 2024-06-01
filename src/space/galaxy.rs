@@ -1,6 +1,5 @@
 use super::{star::Star, SpaceObject, SpaceObjectTrait};
-use crate::{LehmerRnd, X_SECTORS, Y_SECTORS};
-use cgmath::Point2;
+use crate::{LehmerRnd, Point2, X_SECTORS, Y_SECTORS};
 
 #[derive(Default)]
 pub struct Galaxy {
@@ -8,7 +7,7 @@ pub struct Galaxy {
 }
 
 impl Galaxy {
-    pub fn update(&mut self, state_pos: Point2<f32>, lehmer: &mut LehmerRnd) {
+    pub fn update(&mut self, state_pos: Point2, lehmer: &mut LehmerRnd) {
         self.stars.clear();
 
         for x in 0..X_SECTORS {
