@@ -2,7 +2,7 @@ use cgmath::Point2;
 use sdl2::{
     gfx::primitives::DrawRenderer, pixels::Color, rect::Rect, render::Canvas, video::Window,
 };
-use space::{galaxy::Galaxy, star::Star};
+use space::{galaxy::Galaxy, SpaceObject};
 
 mod space;
 
@@ -42,7 +42,7 @@ pub struct State {
     pub lmb_clicked: bool,
     pub galaxy: Galaxy,
     pub lehmer: LehmerRnd,
-    pub selected_system: Option<Star>,
+    pub selected_star: Option<SpaceObject>,
 }
 
 impl Default for State {
@@ -54,7 +54,7 @@ impl Default for State {
             lmb_clicked: false,
             galaxy: Galaxy::default(),
             lehmer: LehmerRnd { counter: 0 },
-            selected_system: None,
+            selected_star: None,
         }
     }
 }
@@ -77,17 +77,12 @@ impl State {
         self.galaxy.update(self.pos, &mut self.lehmer);
 
         if self.lmb_clicked {
-            let sx = (self.mouse_xy.x.floor() as f32 + self.pos.x) as i64;
-            let sy = (self.mouse_xy.y.floor() as f32 + self.pos.y) as i64;
+            let exists = self.galaxy.stars.iter().find(|star| {
+                star.pos.x.floor() == self.mouse_xy.x.floor()
+                    && star.pos.y.floor() == self.mouse_xy.y.floor()
+            });
 
-            let star_system = Star::new(
-                Point2::new(sx, sy),
-                Point2::new(self.pos.x.floor() as f32, self.pos.y.floor() as f32),
-                &mut self.lehmer,
-                true,
-            );
-
-            self.selected_system = star_system.or(None);
+            self.selected_star = exists.cloned();
         }
     }
 
@@ -119,13 +114,13 @@ impl State {
 
         self.render_stars(canvas);
 
-        self.render_selected_system(canvas);
+        self.render_selected_star(canvas);
 
         canvas.present();
     }
 
-    fn render_selected_system(&mut self, canvas: &mut Canvas<Window>) {
-        if let Some(system) = &self.selected_system {
+    fn render_selected_star(&mut self, canvas: &mut Canvas<Window>) {
+        if let Some(star) = &self.selected_star {
             // Container
             canvas.set_draw_color(Color::BLUE);
             let _ = canvas.fill_rect(Rect::new(
@@ -146,32 +141,24 @@ impl State {
             let x = (WIDTH / 16u32) as i16;
             let y = ((HEIGHT / 2u32) as f32) as i16 + (HEIGHT / 4u32) as i16;
 
-            let _ = canvas.filled_circle(x, y, (system.diameter / 2.) as i16, system.colour);
+            let _ = canvas.filled_circle(x, y, (star.diameter / 2.) as i16, star.colour);
 
             // Planets
-            if let Some(star) = &system.child {
-                star.planets.iter().for_each(|planet| {
-                    let planet_x = x + (planet.child.as_ref().unwrap().orbit_distance * 0.5) as i16;
+            star.satellites.iter().for_each(|planet| {
+                let planet_x = x + (planet.orbit_radius * 0.5) as i16;
+                let _ =
+                    canvas.filled_circle(planet_x, y, (planet.diameter / 2.) as i16, planet.colour);
+
+                // Moons
+                planet.satellites.iter().for_each(|moon| {
                     let _ = canvas.filled_circle(
                         planet_x,
-                        y,
-                        (planet.diameter / 2.) as i16,
-                        planet.colour,
+                        y + (moon.orbit_radius * 0.8) as i16,
+                        (moon.diameter / 2.0) as i16,
+                        moon.colour,
                     );
-
-                    // Moons
-                    if let Some(planet) = &planet.child {
-                        planet.moons.iter().for_each(|moon| {
-                            let _ = canvas.filled_circle(
-                                planet_x,
-                                y + (moon.child.as_ref().unwrap().orbit_distance * 0.8) as i16,
-                                (moon.diameter / 2.0) as i16,
-                                moon.colour,
-                            );
-                        });
-                    }
                 });
-            }
+            });
         }
     }
 }

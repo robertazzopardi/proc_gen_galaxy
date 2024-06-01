@@ -1,7 +1,3 @@
-extern crate cgmath;
-extern crate procedural_gen;
-extern crate sdl2;
-
 mod time;
 mod window;
 

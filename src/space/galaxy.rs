@@ -1,10 +1,10 @@
-use super::star::Star;
+use super::{star::Star, SpaceObject, SpaceObjectTrait};
 use crate::{LehmerRnd, X_SECTORS, Y_SECTORS};
 use cgmath::Point2;
 
 #[derive(Default)]
 pub struct Galaxy {
-    pub stars: Vec<Star>,
+    pub stars: Vec<SpaceObject>,
 }
 
 impl Galaxy {
@@ -16,15 +16,13 @@ impl Galaxy {
                 let sx = (x as f32 + state_pos.x) as i64;
                 let sy = (y as f32 + state_pos.y) as i64;
 
-                let star_system = Star::new(
-                    Point2::new(sx, sy),
-                    Point2::new(x as f32, y as f32),
-                    lehmer,
-                    false,
-                );
+                lehmer.counter = (sx & 0xFFFF).wrapping_shl(16) | (sy & 0xFFFF);
 
-                if let Some(system) = star_system {
-                    self.stars.push(system);
+                let star = Star::create(lehmer, Point2::new(x as f32, y as f32), 0.);
+
+                let exists = lehmer.rnd_int(0, 20) == 1;
+                if exists {
+                    self.stars.push(star);
                 }
             }
         }
