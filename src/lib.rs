@@ -29,10 +29,10 @@ pub struct LehmerRnd {
 
 impl LehmerRnd {
     fn next(&mut self) -> u32 {
-        self.counter += 0xe120fc15;
-        let mut tmp = self.counter.wrapping_mul(0x4a39b70d);
+        self.counter += 0xe120_fc15;
+        let mut tmp = self.counter.wrapping_mul(0x4a39_b70d);
         let m1 = (tmp >> 32) ^ tmp;
-        tmp = m1.wrapping_mul(0x12fad5c9);
+        tmp = m1.wrapping_mul(0x12fa_d5c9);
         let m2 = (tmp >> 32) ^ tmp;
         m2 as u32
     }
@@ -42,7 +42,7 @@ impl LehmerRnd {
     }
 
     pub fn rnd_double(&mut self, min: f32, max: f32) -> f32 {
-        (self.next() as f32 / 0x7FFFFFFF as f32) * (max - min) + min
+        (self.next() as f32 / 0x7FFF_FFFF as f32) * (max - min) + min
     }
 }
 
@@ -97,7 +97,7 @@ impl State {
         }
     }
 
-    fn render_stars(&mut self, canvas: &mut Canvas<Window>) {
+    fn render_stars(&mut self, canvas: &Canvas<Window>) {
         self.galaxy.stars.iter().for_each(|system| {
             let _ = canvas.filled_circle(
                 system.pos.x as i16 * 16 + 8,
@@ -149,8 +149,8 @@ impl State {
             ));
 
             // Star
-            let x = (WIDTH / 16u32) as i16;
-            let y = ((HEIGHT / 2u32) as f32) as i16 + (HEIGHT / 4u32) as i16;
+            let x = i16::try_from(WIDTH / 16u32).unwrap();
+            let y = ((HEIGHT / 2u32) as f32) as i16 + i16::try_from(HEIGHT / 4u32).unwrap();
 
             let _ = canvas.filled_circle(x, y, (star.diameter / 2.) as i16, star.colour);
 
